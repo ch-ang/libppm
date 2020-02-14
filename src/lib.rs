@@ -1,10 +1,10 @@
 use std::fmt; // Import `fmt`
-
+/*
 use std::error::Error;
 use std::fs::File;
 use std::io::Read;
-use std::io::{BufRead, BufReader};
 use std::path::Path;
+*/
 
 #[derive(Debug, Copy, Clone)]
 
@@ -39,11 +39,11 @@ impl Pixel {
     }
 
     pub fn green(&self) -> u8 {
-        return self.r;
+        return self.g;
     }
 
     pub fn blue(&self) -> u8 {
-        return self.r;
+        return self.b;
     }
 
     pub fn fmt(&self, rgb: &mut fmt::Formatter) -> fmt::Result {
@@ -61,6 +61,7 @@ impl Pixel {
         return pixInvert
     }
 
+    /*
     pub fn eq(&self, other: Pixel) -> bool {
         if self.r == other.r && self.g == other.g && self.b == other.b {
             return true;
@@ -68,7 +69,7 @@ impl Pixel {
         else {
             return false;
         }
-    }
+    }*/
 
     pub fn to_grayscale(&mut self) -> Pixel{
         let average = self.r / 3 + self.g / 3 + self.b / 3;
@@ -128,6 +129,7 @@ impl Image{
     return &self.pixels;
     }
 
+    
     pub fn new_with_file(filename: &Path) -> Option<Image> {
 
         let mut width: u32 = 0;
@@ -153,15 +155,16 @@ impl Image{
         return Some(Image::new(width, height, pixels));
     }
 
+    /*
     pub fn invert(&mut self) {
         for i in 0..self.pixels.len() {
             self.pixels[i].r = 255 - self.pixels[i].red()();
             self.pixels[i].g = 255 - self.pixels[i].green();
             self.pixels[i].b = 255 - self.pixels[i].blue();
         }
-    }
+    }*/
 
-    /*
+    
     pub fn invert_image(img : &Image) -> Image{
         let mut inv: Vec<Pixel> = Vec::new();
         for c in &img.pixels {
@@ -170,9 +173,86 @@ impl Image{
 
         return Image::new(img.width, img.height, inv);
 
-    }*/
+    }
+/*****************NOUVEAU CODE*************************************************/
 
-    
+    pub fn grayscale(image: &Image) -> Image {
+    let mut gray: Vec<Color> = Vec::new(); 
+
+        for i in &image.pixels {
+            let c: u8 = Color::grayscale(i);
+            gray.push(Color::new(c, c, c));
+        }
+
+        return Image::new(image.width, image.height, gray);
+    }
+
+    /*
+    pub fn skip_and_print_file(skip: usize, filename: &Path) {
+        if let Ok(file) = File::open(filename) {
+            let mut buffer = BufReader::new(file);
+            let (width, height) = Image::read_image_info(&mut buffer).expect("oh no!");
+            println!("{}, {}", width, height);
+
+            for line in buffer.lines() {
+                for word in line.unwrap().split_whitespace() {
+                    println!("word '{}'", word);
+                }
+            }
+        }
+    }
+
+
+    fn read_image_info(reader: &mut BufReader<File>) -> Result<(usize, usize), Box<dyn Error>> {
+        let mut string_buffer = String::new();
+        for _i in 0..3 {
+            reader.read_line(&mut string_buffer).unwrap();
+        }
+
+        let ppm_id = string_buffer.lines().nth(0usize).unwrap();
+
+        let image_size = string_buffer
+            .lines()
+            .nth(1usize)
+            .unwrap()
+            .to_string()
+            .clone();
+        let (width, height) = Image::extract_image_size(image_size);
+
+        let color_depth = string_buffer
+            .lines()
+            .nth(2usize)
+            .unwrap()
+            .to_string()
+            .clone();
+
+        Ok((width, height))
+    }
+
+
+    /// return tuple containing:
+    /// - image height
+    /// - image width
+    fn extract_image_size(size: String) -> (usize, usize) {
+        let image_size: Vec<String> = size
+            .split_whitespace()
+            .into_iter()
+            .map(|w| w.to_string())
+            .collect();
+        let width = image_size
+            .first()
+            .unwrap()
+            .parse::<usize>()
+            .expect("image width should be a number");
+        let height = image_size
+            .last()
+            .unwrap()
+            .parse::<usize>()
+            .expect("image height should be a number");
+        (width, height)
+    }
+
+    */
 }
 
 //*********************************************************************************
@@ -236,14 +316,6 @@ mod tests {
         assert_eq!(v.to_grayscale(), p)
     }
 
-
-
-
-
-
     //Test for Image structure's functions
 
-    
-
-    
 }
